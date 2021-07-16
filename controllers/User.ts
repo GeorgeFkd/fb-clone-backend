@@ -5,12 +5,13 @@ import { Jwt } from "jsonwebtoken"
 import {IGetUserAuthInfoRequest} from "../types"
 const jwtSecret = "my house is on fire"
 const jwt = require("jsonwebtoken")
-export function getUserFriends(req:Request,res:Response){
-
+export function getUserFriends(req:IGetUserAuthInfoRequest,res:Response){
+    // SELECT name FROM users where user_id = (
+    // SELECT user2 FROM areFriends where user1={req.user._id});
 }
 
-export function getUserPosts(req:Express.Request,res:Express.Response){
-
+export function getUserPosts(req:Request,res:Response){
+    //SELECT * FROM posts WHERE author_id = {req.user._id};
 }
 
 export async function registerUser(req:Request,res:Response){
@@ -53,6 +54,12 @@ export async function loginUser(req:Request,res:Response){
     res.set('auth-token',"Bearer " + token);
     res.send(token);
     
+}
+
+export async function logoutUser(req:IGetUserAuthInfoRequest,res:Response){
+    //? probably this is enough
+    res.set('auth-token','')
+    res.status(200).send('succesfully logged out');
 }
 
 
