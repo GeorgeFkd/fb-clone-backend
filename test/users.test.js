@@ -57,62 +57,17 @@ describe("/users route", function () {
           if (err) done(err);
           done();
         });
-    }).timeout(4000);
+    });
   });
 
-  describe("POST /login", () => {
-    beforeEach(async function () {
-      const req = {
-        body: {
-          name: "lilChadgeon",
-          email: "me@gmail.com",
-          password: "1234",
-        },
-      };
-      await client.query(
-        "INSERT INTO pg_temp.users (name,email,password) VALUES($1,$2,$3)",
-        [req.body.name, req.body.email, req.body.password]
-      );
+  describe("POST /posts", function () {
+    it("gets comments of a certain post", function () {
+      request(app)
+        .get("/posts/3/comments")
+        .expect(200)
+        .end((err, res) => {
+          done();
+        });
     });
-
-    afterEach(async function () {
-      await client.query("DELETE FROM pg_temp.users WHERE 1=1");
-    });
-    //     it("Should login the user with the correct password", async function () {
-    //         const req = {
-    //             body: {
-    //                 email: "me@gmail.com",
-    //                 password: "1234",
-    //             },
-    //         };
-    //     });
-
-    //     it("should reject the login due to wrong password and return a 401 error and an appropriate message", async function () {
-    //         const req = {
-    //             body: {
-    //                 email: "me@gmail.com",
-    //                 password: "123456",
-    //             },
-    //         };
-    //     });
-
-    //     it("should reject the login due to wrong email and return a 401 error and an appropriate message", async function () {
-    //         const req = {
-    //             body: {
-    //                 email: "me@hotmail.com",
-    //                 password: "1234",
-    //             },
-    //         };
-    //         // it is the same no need to change
-    //     });
-
-    //     it("should check that there is an auth-token header after the successfull login", async function () {
-    //         const req = {
-    //             body: {
-    //                 email: "me@gmail.com",
-    //                 password: "123456",
-    //             },
-    //         };
-    //     });
   });
 });

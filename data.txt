@@ -1,0 +1,27 @@
+{
+    "name":"hotchick77",
+    "email":"example@gmail.com",
+    "password":"ilikekyle"
+}
+
+{
+    "content":"so i was cracking open a cold one with the girls",
+    "group_name":"emo goth grils"
+}
+{
+    "name":"badboyjohn",
+    "email":"example2@gmail.com",
+    "password":"bitcoinismypassion"
+}
+
+
+{
+    "content":"so i was cracking open a cold one with the boys and a hot chick calls me",
+    "group_name":"sigma chads"
+}
+
+{
+    "name":"goodguyRico",
+    "email":"example3@gmail.com",
+    "password":"iamasnowflake"
+}

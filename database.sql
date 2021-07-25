@@ -18,7 +18,7 @@ CREATE TABLE posts(
     author_id int references users(user_id) NOT NULL,
     createdAt TIMESTAMPTZ DEFAULT Now(),
     content TEXT NOT NULL,
-    group_name VARCHAR(50) references groups(name) default 'public' NOT NULL
+    group_name VARCHAR(50) references groups(name) NOT NULL
 );
 
 CREATE TABLE isMemberOfGroup(
@@ -41,7 +41,7 @@ CREATE TABLE comments(
     createdAt TIMESTAMPTZ DEFAULT Now() NOT NULL,
     author_id int references users(user_id) NOT NULL,
     content TEXT NOT NULL,
-    replies_to int references comments(comment_id) NOT NULL
+    replies_to int references comments(comment_id)
 );
 
 
