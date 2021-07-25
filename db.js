@@ -8,4 +8,10 @@ const pool = new Pool({
     database: "facebook",
 });
 
-export default pool;
+// for some reason cant have types here
+
+module.exports.query = function (text, values) {
+    return pool.query(text, values);
+};
+
+module.exports.poolDB = pool;
