@@ -5,6 +5,12 @@
 }
 
 {
+    "name":"BigDaddy",
+    "email":"myemail@gmail.com",
+    "password":"myppislarge"
+}
+
+{
     "content":"so i was cracking open a cold one with the girls",
     "group_name":"emo goth grils"
 }

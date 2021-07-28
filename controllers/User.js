@@ -15,17 +15,14 @@ module.exports.getUserGroups = async function (req, res) {
   const sqlStatement = "SELECT group_id from isMemberOfGroup WHERE user_id=$1";
 
   try {
-    userGroups = await poolDB.query(
-      sqlStatement,
-      [requestedUserId]
-    );
+    userGroups = await poolDB.query(sqlStatement, [requestedUserId]);
   } catch (error) {
     console.error(error);
   }
 };
 module.exports.getUserComments = async function (req, res) {
   let userCommentsDbReturn;
-  const sqlStatement;
+  const sqlStatement = "SELECT * FROM comments where author_id=$1";
   try {
     userCommentsDbReturn = await poolDB.query("");
   } catch (error) {
@@ -33,39 +30,45 @@ module.exports.getUserComments = async function (req, res) {
     res.status(400).send("Couldnt get user comments");
   }
 };
-module.exports.getUserFriends = function (req, res) {
+module.exports.getUserFriends = async function (req, res) {
   // SELECT name FROM users where user_id = (
   // SELECT user2 FROM areFriends where user1={req.user._id});
-  const sqlStatement = "SELECT name FROM users where user_id = (SELECT name from areFriends where user1=$1 and friendrequest_status='accepted')"
+  const sqlStatement =
+    "SELECT name FROM users where user_id = (SELECT name from areFriends where user1=$1 and friendrequest_status='accepted')";
 
   let userFriendsDbReturn;
-try {
-     userFriendsDbReturn = await poolDB.query(sqlStatement,[req.query.user])
-      res.status(200).send(userFriendsDbReturn.rows)
-} catch (err) {
-  
-}  console.error(err)
+  try {
+    userFriendsDbReturn = await poolDB.query(sqlStatement, [req.query.user]);
+    res.status(200).send(userFriendsDbReturn.rows);
+  } catch (err) {}
+  console.error(err);
 };
 
-module.exports.getUserPosts = function (req, res) {
+module.exports.getUserPosts = async function (req, res) {
   const sqlStatement = "SELECT * FROM posts WHERE author_id=$1";
 
   try {
-    const userPostsDbReturn = await poolDB.query(sqlStatement,[req.params.id])
+    const userPostsDbReturn = await poolDB.query(sqlStatement, [req.params.id]);
 
-    res.status(200).json(userPostsDbReturn.rows)
-
+    res.status(200).json(userPostsDbReturn.rows);
   } catch (error) {
     console.error(error);
-    res.status(400).send("The request for user posts failed")
+    res.status(400).send("The request for user posts failed");
   }
 };
 
 module.exports.registerUser = async function (req, res) {
   //todo if email already exists reject it
   //this saves the user properly in the database
-  const existingUser = await poolDB.query("SELECT * FROM users where email=$1",[req.body.email])
-  if(existingUser)return res.status(406).send(`User with email: ${req.body.email} already exists`)
+  const existingUser = await poolDB.query(
+    "SELECT * FROM users where email=$1",
+    [req.body.email]
+  );
+  console.log(existingUser.rows.length, req.body);
+  if (existingUser.rows.length !== 0)
+    return res
+      .status(406)
+      .send(`User with email: ${req.body.email} already exists`);
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
   const user = {
@@ -73,14 +76,17 @@ module.exports.registerUser = async function (req, res) {
     email: req.body.email,
     password: hashedPassword,
   };
-  const sqlStatement = "INSERT INTO users (name,email,password) VALUES ($1,$2,$3);" 
+  //! make the user somehow login immediately
+  const sqlStatement =
+    "INSERT INTO users (name,email,password) VALUES ($1,$2,$3);";
   //todo save user to database
   console.log(user);
   try {
-    const saved = await poolDB.query(
-     sqlStatement,
-      [req.body.name, req.body.email, hashedPassword]
-    );
+    const saved = await poolDB.query(sqlStatement, [
+      req.body.name,
+      req.body.email,
+      hashedPassword,
+    ]);
     console.log("success");
     res.status(200).send(user);
   } catch (error) {
@@ -91,10 +97,8 @@ module.exports.registerUser = async function (req, res) {
 
 module.exports.loginUser = async function (req, res) {
   const sqlStatement = "SELECT * FROM users WHERE email=$1";
-
-  const user = await poolDB.query(sqlStatement, [
-    req.body.email,
-  ]);
+  console.log(req.body, "here is the body");
+  const user = await poolDB.query(sqlStatement, [req.body.email]);
   if (!user) return res.status(401).send("Email or password is wrong");
 
   console.log(req.body.password, user.rows[0].password);
@@ -111,7 +115,7 @@ module.exports.loginUser = async function (req, res) {
   const token = jwt.sign(userObj, jwtSecret);
   res.set("auth-token", token);
 
-  res.status(201).send(token);
+  res.status(201).json({ token });
 };
 
 module.exports.logoutUser = async function (req, res) {
@@ -121,12 +125,9 @@ module.exports.logoutUser = async function (req, res) {
 };
 
 async function findUserIdByName(name) {
-  const sqlStatement = "SELECT user_id from users WHERE name=$1"
+  const sqlStatement = "SELECT user_id from users WHERE name=$1";
 
-  const userDbReturn = await poolDB.query(
-    sqlStatement,
-    [name]
-  );
+  const userDbReturn = await poolDB.query(sqlStatement, [name]);
   const user_id = userDbReturn.rows[0].user_id;
   return user_id;
 }

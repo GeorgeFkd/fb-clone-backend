@@ -55,8 +55,9 @@ module.exports.postComment = async function (req, res) {
 module.exports.createPost = async function (req, res) {
   //get the data by req.body form
   //INSERT INTO posts (author_id,content,group_name) VALUES($1,$2,$3)
-  console.log(req.user);
+  console.log(req.user, req.body);
   const { content, group_name } = req.body;
+  console.log(content, group_name, req.user._id);
   let insertPostDbReturn;
   try {
     insertPostDbReturn = await poolDB.query(
@@ -65,7 +66,8 @@ module.exports.createPost = async function (req, res) {
     );
   } catch (err) {
     console.error(err);
+    return res.status(400).send("sth went wrong");
   }
-  console.log(insertPostDbReturn);
-  res.send(req.user);
+  //console.log(insertPostDbReturn);
+  res.status(201).send("Post was succesfully created");
 };

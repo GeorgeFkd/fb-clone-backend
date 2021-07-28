@@ -8,19 +8,19 @@ const app = express();
 app.use(cors());
 
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 app.use("/users", UserRouter);
 app.use("/posts", PostRouter);
 
 app.use(function (err, req, res, next) {
-    if (err) {
-        console.error(err);
-        res.sendStatus(400);
-    }
+  if (err) {
+    console.error(err);
+    res.sendStatus(400);
+  }
 });
 
 module.exports = app.listen(PORT, () => {
-    console.log("hello there");
+  console.log("hello there");
 });
 
 //todo use env variables
