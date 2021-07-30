@@ -20,16 +20,17 @@ CREATE TABLE posts(
     content TEXT NOT NULL,
     group_name VARCHAR(50) references groups(name) NOT NULL
 );
-
+CREATE TYPE requeststatus AS ENUM ('pending','accepted','declined');
 CREATE TABLE isMemberOfGroup(
     group_id int references groups(group_id) NOT NULL,
-    user_id int references users(user_id) NOT NULL
+    user_id int references users(user_id) NOT NULL,
+    participation_request_status requeststatus NOT NULL default "pending"
 );
 
-CREATE TYPE requeststatus AS ENUM ('pending','accepted','declined');
+
 CREATE TABLE areFriends(
     user1 int references users(user_id) NOT NULL,
-    user2 int references users(user_id) NOT NULL,
+    user2 int references users(uisser_id) NOT NULL,
     friendrequest_status requeststatus NOT NULL,
     PRIMARY KEY(user1,user2)
 );
