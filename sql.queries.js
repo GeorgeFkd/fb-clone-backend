@@ -39,7 +39,7 @@ module.exports.CREATE_NEW_GROUP =
   "INSERT INTO groups (creator_id,name) VALUES($1,$2)";
 
 module.exports.ACCEPT_PENDING_USER_TO_GROUP =
-  "UPDATE isMemberOfGroup SET participation_request_status='accepted' WHERE user_id=$1 and group_id=$1";
+  "UPDATE isMemberOfGroup SET participation_request_status='accepted' WHERE user_id=$1 and group_id=$2 and creator_id=$3";
 
 module.exports.ADD_USER_IN_PENDING_LIST_OF_GROUP =
   "INSERT INTO isMemberOfGroup (group_id,user_id,participation_request_status) VALUES($1,$2,'pending')";

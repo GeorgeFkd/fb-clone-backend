@@ -111,3 +111,5 @@ module.exports.createNewGroup = (req, res) => {
     res.status(400).send("Failed to create group");
   }
 };
+
+function checkIfUserIsCreatorOfRespectiveGroup() {}

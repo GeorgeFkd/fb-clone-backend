@@ -1,15 +1,17 @@
 const router = require("express").Router();
 
-const {
-  getPostsOfGroup,
-  getAllGroups,
-  getMembersOfGroup,
-} = require("../controllers/Group");
+const GroupController = require("../controllers/Group");
+const verifyJwtToken = require("../verifyJwtToken");
 
-router.post("/:id/newuser/:user_id");
-router.get("/:id/posts", getPostsOfGroup);
-router.get("/:id/members", getMembersOfGroup);
+//the user asks the group if he can join ,not the other way around
+router.post(
+  "/:id/adduser",
+  verifyJwtToken,
+  GroupController.addNewMemberPending
+);
+router.put("/:id/acceptuser", GroupController.addNewMemberPending);
+router.get("/:id/members", GroupController.getMembersOfGroup);
 // router.get("/:id");
-router.get("/", getAllGroups);
+router.get("/", GroupController.getAllGroups);
 
 module.exports = router;
