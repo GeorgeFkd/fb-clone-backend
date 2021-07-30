@@ -3,6 +3,9 @@ const {
   GET_GROUP_DETAILS_WITH_ID,
   GET_GROUPS_NAME_AND_ID,
   GET_MEMBERS_NAMES_OF_GROUP_WITH_ID,
+  CREATE_NEW_GROUP,
+  ADD_USER_IN_PENDING_LIST_OF_GROUP,
+  ACCEPT_PENDING_USER_TO_GROUP,
 } = require("../sql.queries");
 module.exports.getPostsOfGroup = async (req, res) => {
   //todo db req
@@ -59,6 +62,52 @@ module.exports.getMembersOfGroup = async (req, res) => {
   //todo db req
 };
 
-module.exports.addNewMemberPending = (req, res) => {};
+module.exports.addNewMemberPending = (req, res) => {
+  try {
+    const memberAddedDbReturn = await poolDB.query(
+      ADD_USER_IN_PENDING_LIST_OF_GROUP,
+      [req.body.group_id, req.user._id]
+    );
 
-module.exports.acceptPendingMember = (req, res) => {};
+    res
+      .status(200)
+      .send(
+        `Your request to join the group ${req.body.group_id} was successfull`
+      );
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Couldnt request to join group");
+  }
+};
+
+module.exports.acceptPendingMember = (req, res) => {
+  try {
+    const memberAcceptedDbReturn = await poolDB.query(
+      ACCEPT_PENDING_USER_TO_GROUP,
+      [req.user._id, req.body.group_id]
+    );
+    //! change this ,this only for postman
+    res.status(200).send(memberAddedDbReturn);
+    //res.status(200).send(`You accepted ${req.user.name} into your group successfully`)
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Failed to accept pending member");
+  }
+};
+
+module.exports.createNewGroup = (req, res) => {
+  //verifyJwt middleware gives us req.user._id
+  const user_id = req.user._id;
+  console.log(user_id);
+  try {
+    const createGroupDbReturn = await poolDB.query(CREATE_NEW_GROUP, [
+      user_id,
+      req.body.name,
+    ]);
+    res.status(200).send(`Created ${req.body.name} group successfully`);
+  } catch (error) {
+    console.error(error);
+    //handle differently if the error comes from jwt somehow to send different http status
+    res.status(400).send("Failed to create group");
+  }
+};

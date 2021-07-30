@@ -34,3 +34,12 @@ module.exports.GET_GROUPS_NAME_AND_ID = "SELECT group_id,name from groups";
 
 module.exports.GET_MEMBERS_NAMES_OF_GROUP_WITH_ID =
   "SELECT name from users WHERE user_id in (SELECT user_id from isMemberOfGroup WHERE group_id=$1)";
+
+module.exports.CREATE_NEW_GROUP =
+  "INSERT INTO groups (creator_id,name) VALUES($1,$2)";
+
+module.exports.ACCEPT_PENDING_USER_TO_GROUP =
+  "UPDATE isMemberOfGroup SET participation_request_status='accepted' WHERE user_id=$1 and group_id=$1";
+
+module.exports.ADD_USER_IN_PENDING_LIST_OF_GROUP =
+  "INSERT INTO isMemberOfGroup (group_id,user_id,participation_request_status) VALUES($1,$2,'pending')";

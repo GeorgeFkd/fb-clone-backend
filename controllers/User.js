@@ -10,7 +10,6 @@ const {
   GET_USERS_ALL_POSTS_WITH_ID,
   FIND_USER_WITH_EMAIL,
   INSERT_REGISTERED_USER,
-  GET_USERS_ALL_POSTS_WITH_ID,
   GET_GROUPS_ID_OF_USER_WITH_ID,
   GET_USERS_ACCEPTED_FRIENDS_NAMES_WITH_HIS_ID,
 } = require("../sql.queries");
@@ -90,7 +89,7 @@ module.exports.registerUser = async function (req, res) {
       hashedPassword,
     ]);
     console.log("success");
-    res.status(200).send(user);
+    res.status(201).send("hello");
   } catch (error) {
     console.error(error);
     res.status(400).send("something is missing");

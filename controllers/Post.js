@@ -30,7 +30,7 @@ module.exports.getPostComments = async function (req, res) {
     console.error(err);
   }
   console.log(commentsDbReturn.rows);
-  res.json({ postComments: commentsDbReturn.rows });
+  res.status(200).json({ postComments: commentsDbReturn.rows });
   //SELECT * FROM comments WHERE post_id = {req.params.postid}
   //i can then flat it out to get names and stuff
 };

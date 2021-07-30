@@ -24,6 +24,7 @@ CREATE TYPE requeststatus AS ENUM ('pending','accepted','declined');
 CREATE TABLE isMemberOfGroup(
     group_id int references groups(group_id) NOT NULL,
     user_id int references users(user_id) NOT NULL,
+    -- this probably has to change,not yet live
     participation_request_status requeststatus NOT NULL default "pending"
 );
 
