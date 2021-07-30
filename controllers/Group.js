@@ -1,13 +1,16 @@
 const { poolDB } = require("../db");
-
+const {
+  GET_GROUP_DETAILS_WITH_ID,
+  GET_GROUPS_NAME_AND_ID,
+  GET_MEMBERS_NAMES_OF_GROUP_WITH_ID,
+} = require("../sql.queries");
 module.exports.getPostsOfGroup = async (req, res) => {
   //todo db req
   let getPostsDbReturn;
   try {
-    getPostsDbReturn = await poolDB.query(
-      "SELECT * from groups WHERE group_id=$1",
-      [req.params.id]
-    );
+    getPostsDbReturn = await poolDB.query(GET_GROUP_DETAILS_WITH_ID, [
+      req.params.id,
+    ]);
 
     const actualPosts = getPostsDbReturn.rows;
     res.status(200).json({
@@ -24,7 +27,7 @@ module.exports.getAllGroups = async (req, res) => {
   //todo db req
   let allGroupsDbReturn;
   try {
-    allGroupsDbReturn = await poolDB.query("SELECT group_id,name from groups");
+    allGroupsDbReturn = await poolDB.query(GET_GROUPS_NAME_AND_ID);
     const actualGroups = allGroupsDbReturn.rows;
     res
       .status(200)
@@ -41,7 +44,7 @@ module.exports.getMembersOfGroup = async (req, res) => {
     //todo add request status
     //? works without request status yet
     membersOfGroupDbReturn = await poolDB.query(
-      "SELECT name from users WHERE user_id in (SELECT user_id from isMemberOfGroup WHERE group_id=$1)",
+      GET_MEMBERS_NAMES_OF_GROUP_WITH_ID,
       [req.params.id]
     );
     const membersArray = membersOfGroupDbReturn.rows;

@@ -6,16 +6,26 @@ const { poolDB } = require("../db");
 const jwtSecret = "my house is on fire";
 const jwt = require("jsonwebtoken");
 
-module.exports.getUserInfo = async function (req, res) {
-  const user_id = await findUserIdByName(req.query.name);
-  let userGroups, userFriends, userPosts, userComments;
-};
+const {
+  GET_USERS_ALL_POSTS_WITH_ID,
+  FIND_USER_WITH_EMAIL,
+  INSERT_REGISTERED_USER,
+  GET_USERS_ALL_POSTS_WITH_ID,
+  GET_GROUPS_ID_OF_USER_WITH_ID,
+  GET_USERS_ACCEPTED_FRIENDS_NAMES_WITH_HIS_ID,
+} = require("../sql.queries");
+
+// module.exports.getUserInfo = async function (req, res) {
+//   const user_id = await findUserIdByName(req.query.name);
+//   let userGroups, userFriends, userPosts, userComments;
+// };
 
 module.exports.getUserGroups = async function (req, res) {
-  const sqlStatement = "SELECT group_id from isMemberOfGroup WHERE user_id=$1";
-
+  let userGroups;
   try {
-    userGroups = await poolDB.query(sqlStatement, [requestedUserId]);
+    userGroups = await poolDB.query(GET_GROUPS_ID_OF_USER_WITH_ID, [
+      requestedUserId,
+    ]);
   } catch (error) {
     console.error(error);
   }
@@ -31,25 +41,22 @@ module.exports.getUserComments = async function (req, res) {
   }
 };
 module.exports.getUserFriends = async function (req, res) {
-  // SELECT name FROM users where user_id = (
-  // SELECT user2 FROM areFriends where user1={req.user._id});
-  const sqlStatement =
-    "SELECT name FROM users where user_id = (SELECT name from areFriends where user1=$1 and friendrequest_status='accepted')";
-
   let userFriendsDbReturn;
   try {
-    userFriendsDbReturn = await poolDB.query(sqlStatement, [req.query.user]);
+    userFriendsDbReturn = await poolDB.query(
+      GET_USERS_ACCEPTED_FRIENDS_NAMES_WITH_HIS_ID,
+      [req.query.user]
+    );
     res.status(200).send(userFriendsDbReturn.rows);
   } catch (err) {}
   console.error(err);
 };
 
 module.exports.getUserPosts = async function (req, res) {
-  const sqlStatement = "SELECT * FROM posts WHERE author_id=$1";
-
   try {
-    const userPostsDbReturn = await poolDB.query(sqlStatement, [req.params.id]);
-
+    const userPostsDbReturn = await poolDB.query(GET_USERS_ALL_POSTS_WITH_ID, [
+      req.params.id,
+    ]);
     res.status(200).json(userPostsDbReturn.rows);
   } catch (error) {
     console.error(error);
@@ -58,31 +65,26 @@ module.exports.getUserPosts = async function (req, res) {
 };
 
 module.exports.registerUser = async function (req, res) {
-  //todo if email already exists reject it
-  //this saves the user properly in the database
-  const existingUser = await poolDB.query(
-    "SELECT * FROM users where email=$1",
-    [req.body.email]
-  );
+  const existingUser = await poolDB.query(FIND_USER_WITH_EMAIL, [
+    req.body.email,
+  ]);
   console.log(existingUser.rows.length, req.body);
   if (existingUser.rows.length !== 0)
     return res
       .status(406)
       .send(`User with email: ${req.body.email} already exists`);
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(req.body.password, salt);
+  const encryptionSalt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(req.body.password, encryptionSalt);
   const user = {
     name: req.body.name,
     email: req.body.email,
     password: hashedPassword,
   };
   //! make the user somehow login immediately
-  const sqlStatement =
-    "INSERT INTO users (name,email,password) VALUES ($1,$2,$3);";
-  //todo save user to database
+
   console.log(user);
   try {
-    const saved = await poolDB.query(sqlStatement, [
+    const savedUserToDb = await poolDB.query(INSERT_REGISTERED_USER, [
       req.body.name,
       req.body.email,
       hashedPassword,
@@ -96,9 +98,8 @@ module.exports.registerUser = async function (req, res) {
 };
 
 module.exports.loginUser = async function (req, res) {
-  const sqlStatement = "SELECT * FROM users WHERE email=$1";
   console.log(req.body, "here is the body");
-  const user = await poolDB.query(sqlStatement, [req.body.email]);
+  const user = await poolDB.query(FIND_USER_WITH_EMAIL, [req.body.email]);
   if (!user) return res.status(401).send("Email or password is wrong");
 
   console.log(req.body.password, user.rows[0].password);

@@ -1,7 +1,11 @@
 const { poolDB } = require("../db");
 
 //all these work properly
-
+const {
+  GET_POST_COMMENTS_WITH_POSTID,
+  INSERT_COMMENT_OF_POST,
+  INSERT_NEW_POST,
+} = require("../sql.queries");
 module.exports.getCommentReplies = async function (req, res) {
   let commentRepliesDbReturn;
   try {
@@ -19,10 +23,9 @@ module.exports.getCommentReplies = async function (req, res) {
 module.exports.getPostComments = async function (req, res) {
   let commentsDbReturn;
   try {
-    commentsDbReturn = await poolDB.query(
-      "SELECT * FROM comments WHERE post_id = $1;",
-      [req.params.id]
-    );
+    commentsDbReturn = await poolDB.query(GET_POST_COMMENTS_WITH_POSTID, [
+      req.params.id,
+    ]);
   } catch (err) {
     console.error(err);
   }
@@ -36,15 +39,12 @@ module.exports.postComment = async function (req, res) {
   let savedCommentDbReturn;
   console.log(req.params.id);
   try {
-    savedCommentDbReturn = await poolDB.query(
-      "INSERT INTO comments (post_id,content,author_id,replies_to) VALUES($1,$2,$3,$4)",
-      [
-        req.params.id,
-        req.body.content,
-        req.user._id,
-        req.body.replies_to || null,
-      ]
-    );
+    savedCommentDbReturn = await poolDB.query(INSERT_COMMENT_OF_POST, [
+      req.params.id,
+      req.body.content,
+      req.user._id,
+      req.body.replies_to || null,
+    ]);
   } catch (error) {
     console.error(error);
   }
@@ -60,10 +60,11 @@ module.exports.createPost = async function (req, res) {
   console.log(content, group_name, req.user._id);
   let insertPostDbReturn;
   try {
-    insertPostDbReturn = await poolDB.query(
-      "INSERT INTO posts (author_id,content,group_name) VALUES($1,$2,$3)",
-      [req.user._id, content, group_name]
-    );
+    insertPostDbReturn = await poolDB.query(INSERT_NEW_POST, [
+      req.user._id,
+      content,
+      group_name,
+    ]);
   } catch (err) {
     console.error(err);
     return res.status(400).send("sth went wrong");
