@@ -1,10 +1,10 @@
 const bcrypt = require("bcryptjs");
-//! bcs of module.exports and not exp def
-//import poolDB from "../db"
 const { poolDB } = require("../db");
 
 const jwtSecret = "my house is on fire";
 const jwt = require("jsonwebtoken");
+
+//! CURRENT USER VS USER -> SOURCE OF ID is just different
 
 const {
   GET_USERS_ALL_POSTS_WITH_ID,
@@ -19,8 +19,23 @@ const {
 //   let userGroups, userFriends, userPosts, userComments;
 // };
 
+module.exports.getCurrentUserGroups = async function (req, res) {
+  const userId = req.user._id;
+  console.log(userId, "id of current user");
+  try {
+    const userGroups = await poolDB.query(GET_GROUPS_ID_OF_USER_WITH_ID, [
+      userId,
+    ]);
+    res.status(200).json({ success: true, groups: userGroups.rows });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ success: false });
+  }
+};
+
 module.exports.getUserGroups = async function (req, res) {
   let userGroups;
+  const requestedUserId = req.params.id;
   try {
     userGroups = await poolDB.query(GET_GROUPS_ID_OF_USER_WITH_ID, [
       requestedUserId,
@@ -89,7 +104,7 @@ module.exports.registerUser = async function (req, res) {
       hashedPassword,
     ]);
     console.log("success");
-    res.status(201).send("hello");
+    res.status(201).json({ message: "You Successfully Signed Up " });
   } catch (error) {
     console.error(error);
     res.status(400).send("something is missing");
@@ -122,6 +137,21 @@ module.exports.logoutUser = async function (req, res) {
   //? probably this is enough
   res.set("auth-token", "");
   res.status(200).send("succesfully logged out");
+};
+
+module.exports.getCurrentUserFriends = async function (req, res) {
+  console.log(req.user._id);
+  let userFriendsDbReturn;
+  try {
+    userFriendsDbReturn = await poolDB.query(
+      GET_USERS_ACCEPTED_FRIENDS_NAMES_WITH_HIS_ID,
+      [req.user._id]
+    );
+    res.status(200).json(userFriendsDbReturn.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json("something went wrong");
+  }
 };
 
 async function findUserIdByName(name) {

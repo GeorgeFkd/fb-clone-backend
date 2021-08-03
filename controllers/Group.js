@@ -6,12 +6,13 @@ const {
   CREATE_NEW_GROUP,
   ADD_USER_IN_PENDING_LIST_OF_GROUP,
   ACCEPT_PENDING_USER_TO_GROUP,
+  GET_POSTS_OF_GROUP_WITH_ID,
 } = require("../sql.queries");
 module.exports.getPostsOfGroup = async (req, res) => {
   //todo db req
   let getPostsDbReturn;
   try {
-    getPostsDbReturn = await poolDB.query(GET_GROUP_DETAILS_WITH_ID, [
+    getPostsDbReturn = await poolDB.query(GET_POSTS_OF_GROUP_WITH_ID, [
       req.params.id,
     ]);
 
@@ -62,7 +63,7 @@ module.exports.getMembersOfGroup = async (req, res) => {
   //todo db req
 };
 
-module.exports.addNewMemberPending = (req, res) => {
+module.exports.addNewMemberPending = async (req, res) => {
   try {
     const memberAddedDbReturn = await poolDB.query(
       ADD_USER_IN_PENDING_LIST_OF_GROUP,
@@ -80,7 +81,7 @@ module.exports.addNewMemberPending = (req, res) => {
   }
 };
 
-module.exports.acceptPendingMember = (req, res) => {
+module.exports.acceptPendingMember = async (req, res) => {
   try {
     const memberAcceptedDbReturn = await poolDB.query(
       ACCEPT_PENDING_USER_TO_GROUP,
@@ -95,7 +96,7 @@ module.exports.acceptPendingMember = (req, res) => {
   }
 };
 
-module.exports.createNewGroup = (req, res) => {
+module.exports.createNewGroup = async (req, res) => {
   //verifyJwt middleware gives us req.user._id
   const user_id = req.user._id;
   console.log(user_id);
@@ -104,7 +105,9 @@ module.exports.createNewGroup = (req, res) => {
       user_id,
       req.body.name,
     ]);
-    res.status(200).send(`Created ${req.body.name} group successfully`);
+    res
+      .status(201)
+      .json({ message: `Created ${req.body.name} group successfully` });
   } catch (error) {
     console.error(error);
     //handle differently if the error comes from jwt somehow to send different http status

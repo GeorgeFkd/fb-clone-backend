@@ -45,11 +45,11 @@ module.exports.postComment = async function (req, res) {
       req.user._id,
       req.body.replies_to || null,
     ]);
+    res.status(201).json({ message: "Comment succesfully posted" });
   } catch (error) {
     console.error(error);
+    res.status(400).json({ message: "Comment wasn't posted properly" });
   }
-
-  res.status(201).send("Comment succesfully posted");
 };
 
 module.exports.createPost = async function (req, res) {

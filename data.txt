@@ -4,6 +4,12 @@
     "password":"ilikekyle"
 }
 
+
+{
+    example4@gmail.com
+    NiceGuyTim
+    bitchesbecrazy
+}
 {
     "name":"BigDaddy",
     "email":"myemail@gmail.com",

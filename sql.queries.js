@@ -3,10 +3,11 @@ module.exports.GET_USER_COMMENTS_BY_HIS_ID = "";
 
 //TODO ADD REQUEST STATUS
 module.exports.GET_GROUPS_ID_OF_USER_WITH_ID =
-  "SELECT group_id from isMemberOfGroup WHERE user_id=$1";
+  "SELECT group_id from isMemberOfGroup WHERE user_id=$1 AND participation_request_status='accepted'";
 
 module.exports.GET_USERS_ACCEPTED_FRIENDS_NAMES_WITH_HIS_ID =
-  "SELECT name FROM users where user_id IN (SELECT user2 from areFriends where user1=$1 and friendrequest_status='accepted')";
+  //just need to remove the guy himself
+  "SELECT name FROM users where user_id in (SELECT user1 from areFriends where (user1=$1 or user2=$1) and friendrequest_status='accepted') or user_id in (SELECT user2 from areFriends where (user1=$1 or user2=$1) and friendrequest_status='accepted' );";
 
 module.exports.GET_USERS_ALL_POSTS_WITH_ID =
   "SELECT * FROM posts WHERE author_id=$1";
@@ -37,6 +38,10 @@ module.exports.GET_MEMBERS_NAMES_OF_GROUP_WITH_ID =
 
 module.exports.CREATE_NEW_GROUP =
   "INSERT INTO groups (creator_id,name) VALUES($1,$2)";
+
+//ok
+module.exports.GET_POSTS_OF_GROUP_WITH_ID =
+  "SELECT posts.group_name,posts.createdAt,posts.content,users.name,posts.post_id FROM posts INNER JOIN users on posts.author_id=users.user_id INNER JOIN groups on groups.name=posts.group_name WHERE groups.group_id=$1";
 
 module.exports.ACCEPT_PENDING_USER_TO_GROUP =
   "UPDATE isMemberOfGroup SET participation_request_status='accepted' WHERE user_id=$1 and group_id=$2 and creator_id=$3";

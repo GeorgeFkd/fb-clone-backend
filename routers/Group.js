@@ -11,7 +11,9 @@ router.post(
 );
 router.put("/:id/acceptuser", GroupController.addNewMemberPending);
 router.get("/:id/members", GroupController.getMembersOfGroup);
+router.get("/:id/posts", GroupController.getPostsOfGroup);
 // router.get("/:id");
+router.post("/", verifyJwtToken, GroupController.createNewGroup);
 router.get("/", GroupController.getAllGroups);
 
 module.exports = router;

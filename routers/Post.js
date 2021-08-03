@@ -11,5 +11,5 @@ const verifyJwt = require("../verifyJwtToken");
 router.get("/comment/:comment_id/replies", getCommentReplies);
 router.get("/:id/comments", getPostComments);
 router.post("/:id/newcomment", verifyJwt, postComment);
-router.post("/new", verifyJwt, createPost);
+router.post("/", verifyJwt, createPost);
 module.exports = router;

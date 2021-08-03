@@ -25,7 +25,7 @@ CREATE TABLE isMemberOfGroup(
     group_id int references groups(group_id) NOT NULL,
     user_id int references users(user_id) NOT NULL,
     -- this probably has to change,not yet live
-    participation_request_status requeststatus NOT NULL default "pending"
+    participation_request_status requeststatus NOT NULL
 );
 
 
@@ -45,5 +45,8 @@ CREATE TABLE comments(
     content TEXT NOT NULL,
     replies_to int references comments(comment_id)
 );
+
+insert into ismemberofgroup (group_id,user_id,participation_request_status) VALUES (2,2,'accepted');
+insert into ismemberofgroup (group_id,user_id,participation_request_status) VALUES (2,4,'accepted');
 
 

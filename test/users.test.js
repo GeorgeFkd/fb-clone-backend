@@ -44,18 +44,17 @@ describe("Facebook Api", function () {
         },
       };
       console.log("hello bitch");
-      request(app)
+      return request(app)
         .post("/users/register")
-        .set("Content-type", "application/json")
+        // .set("Content-type", "application/json")
         .send(req)
-        .expect(201)
-        .end((err, res) => {
+        .expect({ message: "You Successfully Signed Up " })
+        .end(function (err, res) {
           console.log(res);
           if (err) done(err);
-
           done();
         });
-    });
+    }).timeout(3000);
   });
 
   describe("POST /posts", function () {
@@ -88,7 +87,7 @@ describe("Facebook Api", function () {
               content: comment.content,
             };
           });
-          console.log(commentsArray, commentObject);
+
           const index = commentsArray.find((comment) => {
             return isEqual(comment, commentObject);
           });
