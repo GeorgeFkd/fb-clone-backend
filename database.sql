@@ -31,7 +31,7 @@ CREATE TABLE isMemberOfGroup(
 
 CREATE TABLE areFriends(
     user1 int references users(user_id) NOT NULL,
-    user2 int references users(uisser_id) NOT NULL,
+    user2 int references users(user_id) NOT NULL,
     friendrequest_status requeststatus NOT NULL,
     PRIMARY KEY(user1,user2)
 );
@@ -46,6 +46,29 @@ CREATE TABLE comments(
     replies_to int references comments(comment_id)
 );
 
+
+-- to check if it is proper design
+CREATE TABLE groupchat_messages(
+    group_id int references groups(group_id) NOT NULL,
+    author_id int references users(user_id) NOT NULL,
+    author_name VARCHAR(50) references users(name),
+    content TEXT NOT NULL,
+    createdAt TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+CREATE TABLE chat_messages(
+    user1 int references users(user_id) NOT NULL,
+    user2 int references users(user_id) NOT NULL,
+    author_name VARCHAR(50) references users(name),
+    content TEXT NOT NULL,
+    createdAt TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+--todo add check that authorname is one of the two users name
+
+ALTER TABLE groupchat_messages ADD message_id SERIAL PRIMARY KEY;
+ALTER TABLE chat_messages ADD message_id SERIAL PRIMARY KEY;
+ALTER TABLE chat_messages ADD chat_id SERIAL;
+--todo idea: chat_messages-> broken into chat {user1,user2,chat_id} ,chat_messages{chat_id,...chatDetails}
 insert into ismemberofgroup (group_id,user_id,participation_request_status) VALUES (2,2,'accepted');
 insert into ismemberofgroup (group_id,user_id,participation_request_status) VALUES (2,4,'accepted');
 

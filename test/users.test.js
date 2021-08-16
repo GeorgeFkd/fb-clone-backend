@@ -35,7 +35,7 @@ describe("Facebook Api", function () {
   describe("GET /groups", function () {});
 
   describe("POST /users/register", function () {
-    it("Should save(register) the new user to the database", function (done) {
+    it("Should save(register) the new user to the database", async function (done) {
       const req = {
         body: {
           name: "lilChad",
@@ -44,20 +44,16 @@ describe("Facebook Api", function () {
         },
       };
       console.log("hello bitch");
-      return request(app)
+      const result = await request(app)
         .post("/users/register")
-        // .set("Content-type", "application/json")
-        .send(req)
-        .expect({ message: "You Successfully Signed Up " })
-        .end(function (err, res) {
-          console.log(res);
-          if (err) done(err);
-          done();
-        });
+        .set("Content-Type", "application/json")
+        .send(req);
+      console.log("my result", result);
+      done();
     }).timeout(3000);
   });
 
-  describe("POST /posts", function () {
+  describe("GET /posts/:id/comments", function () {
     //it is ok
     const commentObject = {
       post_id: 15,
